@@ -1,4 +1,4 @@
-// src/lib/cap.ts
+
 import Cap from "@cap.js/server";
 import { EXPIRATION, VALKEY_KEYS } from "@/lib/config";
 import { db as valkey } from "@/lib/db";

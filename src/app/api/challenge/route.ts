@@ -1,4 +1,4 @@
-// src/app/api/challenge/route.ts
+
 import { NextResponse } from "next/server";
 import { apiError } from "@/lib/api-helpers";
 import cap from "@/lib/cap";

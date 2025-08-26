@@ -1,4 +1,4 @@
-// src/lib/config.ts
+
 export const VALKEY_KEYS = {
   CHALLENGE_PREFIX: "cap:challenge:",
   TOKEN_PREFIX: "cap:token:",
