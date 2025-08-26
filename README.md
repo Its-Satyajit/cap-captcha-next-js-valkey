@@ -165,4 +165,4 @@ The application flow is orchestrated between the client, the Next.js API, and th
 
 ## License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
