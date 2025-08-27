@@ -1,51 +1,63 @@
-
 "use client";
 
-import dynamic from "next/dynamic";
-import { useState } from "react";
+import { type FormEvent, useState } from "react";
+import { useCapChallenge } from "@/hooks/use-cap-challenge";
 import styles from "./page.module.css";
 
-const CapWidgetWithNoSSR = dynamic(
-  () => import("@pitininja/cap-react-widget").then((mod) => mod.CapWidget),
-  {
-    ssr: false,
-    loading: () => <p>Loading Challenge...</p>,
-  },
-);
-
 export default function Home() {
-  const [status, setStatus] = useState<"idle" | "solved" | "error">("idle");
-  const [message, setMessage] = useState(
-    "Please solve the CAP challenge below.",
-  );
+  const [formStatus, setFormStatus] = useState<
+    "idle" | "submitting" | "submitted"
+  >("idle");
+  const [formMessage, setFormMessage] = useState<string | null>(null);
+
+  const { token, isVerified, captchaMessage, CapDisplay } = useCapChallenge();
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!isVerified) {
+      setFormMessage("❌ CAP Challenge not solved.");
+      return;
+    }
+
+    setFormStatus("submitting");
+    setFormMessage("Submitting your request...");
+
+    // Simulate a network request
+    setTimeout(() => {
+      console.log("Form submitted with CAP token:", token);
+      setFormStatus("submitted");
+      setFormMessage("✅ Your form has been successfully submitted!");
+    }, 1000);
+  };
+
+  const displayMessage = formMessage || captchaMessage;
 
   return (
     <main className={styles.container}>
-      <h1>CAP Challenge System Test</h1>
+      <form className={styles.form} onSubmit={handleSubmit}>
+        <h1 className={styles.title}>Sign Up</h1>
 
-      {status !== "solved" && (
-        <CapWidgetWithNoSSR
-          endpoint="/api/"
-          onSolve={(token) => {
-            console.log(`Challenge succeeded, final token: ${token}`);
-            setStatus("solved");
-            setMessage(
-              "✅ Success! The CAP challenge was solved and redeemed successfully.",
-            );
-          }}
-          onError={(errorMessage) => {
-            console.error(`Challenge failed: ${errorMessage}`);
-            setStatus("error");
-            setMessage(`❌ Error: ${errorMessage}`);
-          }}
+        <input
+          type="email"
+          name="email"
+          placeholder="Enter your email"
+          className={styles.input}
+          disabled={formStatus !== "idle"}
         />
-      )}
+
+        {formStatus !== "submitted" && <CapDisplay />}
+
+        <button
+          type="submit"
+          className={styles.button}
+          disabled={!isVerified || formStatus !== "idle"}
+        >
+          {formStatus === "submitting" ? "Submitting..." : "Submit"}
+        </button>
+      </form>
 
       <div className={styles.statusBox}>
-        <p>
-          <strong>Status:</strong> {status}
-        </p>
-        <p>{message}</p>
+        <p>{displayMessage}</p>
       </div>
     </main>
   );
